@@ -10,10 +10,10 @@ export function LoginPage() {
 
       <LoginForm />
 
-      <p className="rounded-lg bg-muted/60 p-3 text-center text-xs text-muted-foreground">
+      {/* <p className="rounded-lg bg-muted/60 p-3 text-center text-xs text-muted-foreground">
         Demo: <span className="font-medium text-foreground">admin@mail.com</span> /{' '}
         <span className="font-medium text-foreground">Secret123</span>
-      </p>
+      </p> */}
     </div>
   )
 }
