@@ -1,75 +1,115 @@
-# React + TypeScript + Vite
+# Mini CRM — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive **React Single Page Application** for the Mini CRM project. Built with **Vite + TypeScript**, **Tailwind CSS v4**, **TanStack Query**, **Zustand**, and a shadcn/ui design system.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🧱 Stack
 
-## React Compiler
+- **React 18** + **TypeScript**
+- **Vite** (fast dev server & production builds)
+- **React Router v6** — routing + route guards
+- **TanStack Query** — server-state caching, mutations, invalidation
+- **Zustand** — client-state (auth)
+- **React Hook Form + Zod** — form handling & validation
+- **Tailwind CSS v4** — utility-first styling
+- **Radix UI / shadcn/ui** — accessible, reusable components
+- **Recharts** — dashboard charts
+- **next-themes** — dark mode
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📁 Project Structure
 
 ```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+src/
+├── app/                      # App wiring
+│   ├── layouts/              # AuthLayout, DashboardLayout, nav-items
+│   └── router/               # AppRouter + guards (Protected, Guest, Admin)
+├── pages/                    # Route-level pages
+│   ├── login-page.tsx
+│   ├── dashboard-page.tsx
+│   ├── customers-page.tsx
+│   ├── projects-page.tsx
+│   ├── tasks-page.tsx
+│   ├── profile-page.tsx
+│   ├── users-page.tsx        # admin only
+│   └── not-found-page.tsx
+├── features/                 # Feature modules (api, model, ui)
+│   ├── auth/ customers/ projects/ tasks/ users/ dashboard/
+└── shared/                   # Reusable code
+    ├── api/                  # axios instance, http client, endpoints, types
+    ├── config/               # routes, env
+    ├── hooks/                # useTableQuery, useDebounce
+    ├── lib/                  # query-client, token-storage, format, utils
+    └── ui/                   # shadcn/ui components (button, table, dialog…)
 ```
+
+---
+
+## 📄 Pages
+
+| Route | Page | Access |
+|---|---|---|
+| `/login` | Login | Guest |
+| `/` | Dashboard | **Admin** |
+| `/customers` | Customers CRUD | **Admin** |
+| `/projects` | Projects CRUD | **Admin** |
+| `/tasks` | Tasks (own for users) | All authenticated |
+| `/users` | Users CRUD | **Admin** |
+| `/profile` | Current user profile | All authenticated |
+| `*` | 404 | — |
+
+> **Route guards** enforce access both in the sidebar (via `adminOnly` items) and at the router level. Regular users only see **Tasks** and **Profile**, and are redirected to `/tasks` after login.
+
+---
+
+## 🚀 Getting Started
+
+```bash
+# 1. Install
+npm install
+
+# 2. Configure the API base URL
+cp .env.example .env   # VITE_API_URL=http://localhost:3000
+
+# 3. Run the dev server
+npm run dev
+```
+
+Open **http://localhost:5173**.
+
+The frontend calls the backend at `${VITE_API_URL}/api`. Make sure the backend is running first (see [`../backend/README.md`](../backend/README.md)).
+
+---
+
+## 🎨 Design system
+
+All UI primitives are shadcn/ui components styled with CSS variables (light/dark). A **design-system showcase page** lets you preview colors, buttons, inputs, tables and more. Use the theme toggle in the header to switch between **light** and **dark** mode.
+
+---
+
+## 🔍 Data & Pagination
+
+- All list queries use **TanStack Query**. Mutations invalidate the list cache so the UI stays in sync.
+- Lists use **cursor-based pagination**:
+  - `useTableQuery` keeps a stack of cursors so you can go **forward** and **back**.
+  - Clearing search or changing a filter resets to the first page.
+
+---
+
+## 🛠️ Scripts
+
+```bash
+npm run dev       # vite dev server
+npm run build     # type-check + production build (tsc -b && vite build)
+npm run preview   # preview the production build
+npm run lint      # eslint .
+```
+
+---
+
+## 🔗 Related
+
+- Backend API → [`../backend/README.md`](../backend/README.md)
+- Project root → [`../README.md`](../README.md)
