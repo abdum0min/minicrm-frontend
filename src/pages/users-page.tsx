@@ -24,7 +24,7 @@ import { TablePagination } from '@/shared/ui/table-pagination'
 const ALL = 'all'
 
 export function UsersPage() {
-  const { search, setSearch, setPage, params } = useTableQuery()
+  const { search, setSearch, params, goNext, goBack, reset, canGoBack } = useTableQuery()
   const [role, setRole] = useState<UserRole | typeof ALL>(ALL)
 
   const { data, isLoading } = useUsers({ ...params, ...(role !== ALL && { role }) })
@@ -45,7 +45,7 @@ export function UsersPage() {
           value={role}
           onValueChange={(value) => {
             setRole(value as UserRole | typeof ALL)
-            setPage(1)
+            reset()
           }}
         >
           <SelectTrigger className="w-40">
@@ -80,7 +80,9 @@ export function UsersPage() {
         onDelete={(id) => deleteUser.mutate(id)}
       />
 
-      {data && <TablePagination meta={data.meta} onPageChange={setPage} />}
+      {data && (
+        <TablePagination meta={data.meta} onNext={goNext} onPrev={goBack} canGoBack={canGoBack} />
+      )}
 
       <UserFormDialog open={dialogOpen} onOpenChange={setDialogOpen} user={editing} />
     </PageShell>

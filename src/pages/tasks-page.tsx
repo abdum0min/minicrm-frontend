@@ -27,7 +27,7 @@ import { TablePagination } from '@/shared/ui/table-pagination'
 const ALL = 'all'
 
 export function TasksPage() {
-  const { search, setSearch, setPage, params } = useTableQuery()
+  const { search, setSearch, params, goNext, goBack, reset, canGoBack } = useTableQuery()
   const [status, setStatus] = useState<TaskStatus | typeof ALL>(ALL)
   const [priority, setPriority] = useState<TaskPriority | typeof ALL>(ALL)
 
@@ -54,7 +54,7 @@ export function TasksPage() {
             value={status}
             onValueChange={(value) => {
               setStatus(value as TaskStatus | typeof ALL)
-              setPage(1)
+              reset()
             }}
           >
             <SelectTrigger className="w-40">
@@ -74,7 +74,7 @@ export function TasksPage() {
             value={priority}
             onValueChange={(value) => {
               setPriority(value as TaskPriority | typeof ALL)
-              setPage(1)
+              reset()
             }}
           >
             <SelectTrigger className="w-40">
@@ -113,7 +113,9 @@ export function TasksPage() {
         onDelete={(id) => deleteTask.mutate(id)}
       />
 
-      {data && <TablePagination meta={data.meta} onPageChange={setPage} />}
+      {data && (
+        <TablePagination meta={data.meta} onNext={goNext} onPrev={goBack} canGoBack={canGoBack} />
+      )}
 
       <TaskFormDialog open={dialogOpen} onOpenChange={setDialogOpen} task={editing} />
     </PageShell>

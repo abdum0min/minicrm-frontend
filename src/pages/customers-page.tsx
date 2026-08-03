@@ -14,7 +14,7 @@ import { PageShell } from '@/shared/ui/page-shell'
 import { TablePagination } from '@/shared/ui/table-pagination'
 
 export function CustomersPage() {
-  const { search, setSearch, setPage, params } = useTableQuery()
+  const { search, setSearch, params, goNext, goBack, canGoBack } = useTableQuery()
   const { data, isLoading } = useCustomers(params)
   const deleteCustomer = useDeleteCustomer()
 
@@ -52,7 +52,9 @@ export function CustomersPage() {
         onDelete={(id) => deleteCustomer.mutate(id)}
       />
 
-      {data && <TablePagination meta={data.meta} onPageChange={setPage} />}
+      {data && (
+        <TablePagination meta={data.meta} onNext={goNext} onPrev={goBack} canGoBack={canGoBack} />
+      )}
 
       <CustomerFormDialog
         open={dialogOpen}

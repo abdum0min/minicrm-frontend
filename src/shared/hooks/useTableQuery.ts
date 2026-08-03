@@ -1,31 +1,61 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import { useDebounce } from './useDebounce'
 
 interface TableQueryState {
-  page: number
   limit: number
   search: string
   debouncedSearch: string
-  setPage: (page: number) => void
-  setSearch: (search: string) => void
-  params: { page: number; limit: number; search?: string }
+  setSearch: (value: string) => void
+  goNext: (cursor: string) => void
+  goBack: () => void
+  reset: () => void
+  canGoBack: boolean
+  params: { limit: number; cursor?: string; search?: string }
 }
 
 export function useTableQuery(limit = 10): TableQueryState {
-  const [page, setPage] = useState(1)
+  const [cursorStack, setCursorStack] = useState<string[]>([])
   const [search, setSearchValue] = useState('')
   const debouncedSearch = useDebounce(search, 400)
 
-  const setSearch = (value: string) => {
+  const setSearch = useCallback((value: string) => {
     setSearchValue(value)
-    setPage(1)
-  }
+    setCursorStack([])
+  }, [])
+
+  const goNext = useCallback((cursor: string) => {
+    setCursorStack((stack) => [...stack, cursor])
+  }, [])
+
+  const goBack = useCallback(() => {
+    setCursorStack((stack) => stack.slice(0, -1))
+  }, [])
+
+  const reset = useCallback(() => {
+    setCursorStack([])
+  }, [])
+
+  const cursor = cursorStack.length > 0 ? cursorStack[cursorStack.length - 1] : undefined
 
   const params = useMemo(
-    () => ({ page, limit, ...(debouncedSearch && { search: debouncedSearch }) }),
-    [page, limit, debouncedSearch],
+    () => ({
+      limit,
+      ...(cursor && { cursor }),
+      ...(debouncedSearch && { search: debouncedSearch }),
+    }),
+    [limit, cursor, debouncedSearch],
   )
 
-  return { page, limit, search, debouncedSearch, setPage, setSearch, params }
+  return {
+    limit,
+    search,
+    debouncedSearch,
+    setSearch,
+    goNext,
+    goBack,
+    reset,
+    canGoBack: cursorStack.length > 0,
+    params,
+  }
 }

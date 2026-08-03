@@ -5,12 +5,9 @@ export interface ApiError {
 }
 
 export interface PaginationMeta {
-  page: number
   limit: number
-  total: number
-  totalPages: number
-  hasPreviousPage: boolean
-  hasNextPage: boolean
+  nextCursor: string | null
+  hasMore: boolean
 }
 
 export interface ApiResponse<T> {
@@ -27,18 +24,15 @@ export interface Paginated<T> {
 }
 
 export interface PaginationParams {
-  page?: number
   limit?: number
   search?: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
+  cursor?: string
 }
 
 export const EMPTY_META: PaginationMeta = {
-  page: 1,
   limit: 10,
-  total: 0,
-  totalPages: 0,
-  hasPreviousPage: false,
-  hasNextPage: false,
+  nextCursor: null,
+  hasMore: false,
 }

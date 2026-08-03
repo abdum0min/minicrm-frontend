@@ -25,7 +25,7 @@ import { TablePagination } from '@/shared/ui/table-pagination'
 const ALL = 'all'
 
 export function ProjectsPage() {
-  const { search, setSearch, setPage, params } = useTableQuery()
+  const { search, setSearch, params, goNext, goBack, reset, canGoBack } = useTableQuery()
   const [status, setStatus] = useState<ProjectStatus | typeof ALL>(ALL)
 
   const { data, isLoading } = useProjects({
@@ -54,7 +54,7 @@ export function ProjectsPage() {
           value={status}
           onValueChange={(value) => {
             setStatus(value as ProjectStatus | typeof ALL)
-            setPage(1)
+            reset()
           }}
         >
           <SelectTrigger className="w-44">
@@ -87,7 +87,9 @@ export function ProjectsPage() {
         onDelete={(id) => deleteProject.mutate(id)}
       />
 
-      {data && <TablePagination meta={data.meta} onPageChange={setPage} />}
+      {data && (
+        <TablePagination meta={data.meta} onNext={goNext} onPrev={goBack} canGoBack={canGoBack} />
+      )}
 
       <ProjectFormDialog open={dialogOpen} onOpenChange={setDialogOpen} project={editing} />
     </PageShell>
