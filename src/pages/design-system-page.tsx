@@ -81,15 +81,22 @@ import { Switch } from '@/shared/ui/switch'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs'
 import { Textarea } from '@/shared/ui/textarea'
-import { ThemeToggle } from '@/shared/ui/theme-toggle'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip'
 import { cn } from '@/shared/lib/utils'
 
 const STATS = [
-  { label: 'Jami mijozlar', value: 128, icon: Users, tone: 'chart-1' },
-  { label: 'Jami loyihalar', value: 56, icon: Briefcase, tone: 'chart-3' },
-  { label: 'Jami vazifalar', value: 234, icon: ListTodo, tone: 'chart-4' },
-  { label: 'Tugallangan', value: 152, icon: CheckCircle2, tone: 'chart-5' },
+  { label: 'Jami mijozlar', value: 128, icon: Users, color: 'var(--stat-blue)' },
+  { label: 'Jami loyihalar', value: 56, icon: Briefcase, color: 'var(--stat-emerald)' },
+  { label: 'Jami vazifalar', value: 234, icon: ListTodo, color: 'var(--stat-amber)' },
+  { label: 'Tugallangan', value: 152, icon: CheckCircle2, color: 'var(--stat-violet)' },
+]
+
+const STAT_TOKENS = [
+  { name: 'stat-blue', className: 'bg-[var(--stat-blue)]' },
+  { name: 'stat-emerald', className: 'bg-[var(--stat-emerald)]' },
+  { name: 'stat-amber', className: 'bg-[var(--stat-amber)]' },
+  { name: 'stat-violet', className: 'bg-[var(--stat-violet)]' },
+  { name: 'stat-red', className: 'bg-[var(--stat-red)]' },
 ]
 
 const PROJECT_STATUS = [
@@ -195,18 +202,15 @@ export function DesignSystemPage() {
   const [page, setPage] = useState(1)
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
-          <div>
-            <p className="text-sm font-semibold">Mini CRM · Design System</p>
-            <p className="text-xs text-muted-foreground">Light va dark rejim uchun bitta token to'plami</p>
-          </div>
-          <ThemeToggle />
-        </div>
-      </header>
+    <div>
+      <div className="mb-8 space-y-1">
+        <h2 className="text-xl font-semibold tracking-tight">Design System</h2>
+        <p className="text-sm text-muted-foreground">
+          Light va dark rejim uchun bitta token to'plami
+        </p>
+      </div>
 
-      <main className="mx-auto max-w-6xl space-y-12 px-6 py-10">
+      <main className="space-y-12">
         <Section id="colors" title="Ranglar" description="Barcha ranglar CSS o'zgaruvchilari orqali — rejim almashganda avtomatik moslashadi.">
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-8">
@@ -219,6 +223,18 @@ export function DesignSystemPage() {
               <p className="text-sm font-medium">Holat ranglari</p>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {STATUS_TOKENS.map((token) => (
+                  <Swatch key={token.name} {...token} />
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Statistika kartalari ranglari</p>
+              <p className="text-xs text-muted-foreground">
+                Oq matn bilan barchasi 4.5:1 dan yuqori kontrastga ega.
+              </p>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
+                {STAT_TOKENS.map((token) => (
                   <Swatch key={token.name} {...token} />
                 ))}
               </div>
@@ -254,21 +270,20 @@ export function DesignSystemPage() {
 
         <Section id="stats" title="Statistika kartalari" description="Dashboard yuqorisidagi asosiy ko'rsatkichlar.">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {STATS.map(({ label, value, icon: Icon, tone }) => (
-              <Card key={label}>
-                <CardContent className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">{label}</p>
-                    <p className="text-2xl font-semibold">{value}</p>
-                  </div>
-                  <span
-                    className="flex size-10 items-center justify-center rounded-lg"
-                    style={{ backgroundColor: `color-mix(in oklch, var(--${tone}), transparent 88%)` }}
-                  >
-                    <Icon className="size-5" style={{ color: `var(--${tone})` }} />
-                  </span>
-                </CardContent>
-              </Card>
+            {STATS.map(({ label, value, icon: Icon, color }) => (
+              <div
+                key={label}
+                style={{ backgroundColor: color }}
+                className="flex items-center justify-between gap-3 rounded-xl px-4 py-3.5 text-white shadow-sm"
+              >
+                <div className="space-y-1.5">
+                  <p className="text-xs font-semibold tracking-wide uppercase">{label}</p>
+                  <p className="text-2xl leading-none font-semibold">{value}</p>
+                </div>
+                <span className="flex size-10 items-center justify-center rounded-lg bg-white/20">
+                  <Icon className="size-5" />
+                </span>
+              </div>
             ))}
           </div>
         </Section>
