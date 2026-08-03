@@ -1,3 +1,3 @@
 export { api } from './axios'
 export { ENDPOINTS } from './endpoints'
-export type { ApiError, PaginatedResponse, PaginationParams } from './types'
+export type { ApiError } from './types'
