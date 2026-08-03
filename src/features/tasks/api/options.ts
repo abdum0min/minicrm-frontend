@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
+import { useIsAdmin } from '@/features/auth'
 import { ENDPOINTS, http } from '@/shared/api'
 
 interface ProjectOption {
@@ -29,8 +30,11 @@ export function useProjectOptions() {
 }
 
 export function useUserOptions() {
+  const isAdmin = useIsAdmin()
+
   return useQuery({
     queryKey: ['options', 'users'],
+    enabled: isAdmin,
     queryFn: async () => {
       const { items } = await http.list<UserOption>(ENDPOINTS.users.root, {
         limit: 100,

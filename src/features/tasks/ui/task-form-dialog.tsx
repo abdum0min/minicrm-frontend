@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import { Controller, useForm } from 'react-hook-form'
 
+import { useCurrentUser, useIsAdmin } from '@/features/auth'
 import { Button } from '@/shared/ui/button'
 import {
   Dialog,
@@ -47,6 +48,8 @@ interface TaskFormDialogProps {
 
 export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps) {
   const save = useSaveTask()
+  const currentUser = useCurrentUser()
+  const isAdmin = useIsAdmin()
   const { data: projects = [] } = useProjectOptions()
   const { data: users = [] } = useUserOptions()
 
@@ -74,9 +77,12 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
             status: task.status,
             priority: task.priority,
           }
-        : EMPTY_VALUES,
+        : {
+            ...EMPTY_VALUES,
+            assignedUserId: isAdmin ? undefined : currentUser?.id,
+          },
     )
-  }, [open, task, reset])
+  }, [open, task, reset, isAdmin, currentUser])
 
   const onSubmit = (values: TaskValues) => {
     save.mutate({ id: task?.id, values }, { onSuccess: () => onOpenChange(false) })
@@ -120,32 +126,34 @@ export function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps
               />
             </FormField>
 
-            <FormField id="assignedUserId" label="Mas'ul" error={errors.assignedUserId?.message}>
-              <Controller
-                control={control}
-                name="assignedUserId"
-                render={({ field }) => (
-                  <Select
-                    value={field.value ? String(field.value) : UNASSIGNED}
-                    onValueChange={(value) =>
-                      field.onChange(value === UNASSIGNED ? undefined : Number(value))
-                    }
-                  >
-                    <SelectTrigger id="assignedUserId" className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={UNASSIGNED}>Tayinlanmagan</SelectItem>
-                      {users.map((user) => (
-                        <SelectItem key={user.id} value={String(user.id)}>
-                          {user.fullname}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </FormField>
+            {isAdmin && (
+              <FormField id="assignedUserId" label="Mas'ul" error={errors.assignedUserId?.message}>
+                <Controller
+                  control={control}
+                  name="assignedUserId"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value ? String(field.value) : UNASSIGNED}
+                      onValueChange={(value) =>
+                        field.onChange(value === UNASSIGNED ? undefined : Number(value))
+                      }
+                    >
+                      <SelectTrigger id="assignedUserId" className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={UNASSIGNED}>Tayinlanmagan</SelectItem>
+                        {users.map((user) => (
+                          <SelectItem key={user.id} value={String(user.id)}>
+                            {user.fullname}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </FormField>
+            )}
 
             <FormField id="status" label="Holat" error={errors.status?.message}>
               <Controller

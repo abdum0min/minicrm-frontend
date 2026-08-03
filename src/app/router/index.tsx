@@ -25,16 +25,16 @@ export function AppRouter() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
-          <Route path={ROUTES.dashboard} element={<DashboardPage />} />
-          <Route path={ROUTES.customers} element={<CustomersPage />} />
-          <Route path={ROUTES.projects} element={<ProjectsPage />} />
-          <Route path={ROUTES.tasks} element={<TasksPage />} />
-          <Route path={ROUTES.profile} element={<ProfilePage />} />
-          <Route path={ROUTES.designSystem} element={<DesignSystemPage />} />
-
           <Route element={<AdminRoute />}>
+            <Route path={ROUTES.dashboard} element={<DashboardPage />} />
+            <Route path={ROUTES.customers} element={<CustomersPage />} />
+            <Route path={ROUTES.projects} element={<ProjectsPage />} />
+            <Route path={ROUTES.designSystem} element={<DesignSystemPage />} />
             <Route path={ROUTES.users} element={<UsersPage />} />
           </Route>
+
+          <Route path={ROUTES.tasks} element={<TasksPage />} />
+          <Route path={ROUTES.profile} element={<ProfilePage />} />
         </Route>
       </Route>
 

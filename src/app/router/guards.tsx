@@ -5,6 +5,10 @@ import { useAuthStore, useSession } from '@/features/auth'
 import { ROUTES } from '@/shared/config'
 import { tokenStorage } from '@/shared/lib/token-storage'
 
+function homePath(user: { role?: string } | null): string {
+  return user?.role === 'ADMIN' ? ROUTES.dashboard : ROUTES.tasks
+}
+
 function FullPageLoader() {
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -30,11 +34,13 @@ export function ProtectedRoute() {
 }
 
 export function GuestRoute() {
-  return tokenStorage.get() ? <Navigate to={ROUTES.dashboard} replace /> : <Outlet />
+  const user = useAuthStore((state) => state.user)
+
+  return tokenStorage.get() ? <Navigate to={homePath(user)} replace /> : <Outlet />
 }
 
 export function AdminRoute() {
   const user = useAuthStore((state) => state.user)
 
-  return user?.role === 'ADMIN' ? <Outlet /> : <Navigate to={ROUTES.dashboard} replace />
+  return user?.role === 'ADMIN' ? <Outlet /> : <Navigate to={homePath(user)} replace />
 }
